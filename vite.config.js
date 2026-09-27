@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': env.VITE_ANTHROPIC_API_KEY,
+        'x-api-key': env.ANTHROPIC_API_KEY || env.VITE_ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({

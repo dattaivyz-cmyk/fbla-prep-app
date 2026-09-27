@@ -18,4 +18,11 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // The api routes and the Vite config run on Node, not in the browser,
+    // so process, console and friends are legitimately available there.
+    // Without this every process.env read is flagged as an undefined global.
+    files: ['api/**/*.js', 'vite.config.js'],
+    languageOptions: { globals: globals.node },
+  },
 ])

@@ -1,5 +1,11 @@
 import { requireStudent } from './_auth.js';
 
+// Deliberately not named VITE_*. Vite inlines any VITE_-prefixed variable
+// it finds in client code, so that prefix on a billing credential is one
+// careless import away from shipping the key to every visitor's browser.
+// The old name is still read so nothing breaks before Vercel is updated.
+const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || process.env.VITE_ANTHROPIC_API_KEY;
+
 export default async function handler(req, res) {
   const user = await requireStudent(req, res);
   if (!user) return;
@@ -27,7 +33,7 @@ Use plain language a high school student would understand. Do not include a titl
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.VITE_ANTHROPIC_API_KEY,
+        'x-api-key': ANTHROPIC_KEY,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
