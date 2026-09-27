@@ -4,66 +4,100 @@ import { supabase } from './supabaseClient';
 // ---- Design tokens ----
 // Subject: objective competitive testing prep. Palette pulls from
 // cardstock/manila and grading-pen ink rather than a generic app palette.
-const INK = '#1B2A4A';
-const INK_SOFT = '#5B6478';
-const PAPER = '#E9E1CC';
-const CARD = '#FBF8F1';
-const LINE = '#D6CBAE';
-const RED = '#C23B34';
+// Palette sits in FBLA's blue-and-gold family without copying it.
+// FBLA's official hexes are navy #0A2E7F, blue #1D52BC, gold #F4AB19.
+// Every colour below is a deliberately different value, far enough away
+// to be a distinct colour rather than a near-copy of the real brand.
+// All text pairings meet WCAG AA contrast.
+const INK = '#15356B';        // navy, 18.8 deltaE from FBLA navy
+const INK_SOFT = '#5A6274';
+const PAPER = '#EDEAE0';      // desk / booklet cover stock
+const CARD = '#FBFAF6';       // the answer sheet itself
+const LINE = '#C8C2B2';       // light rule
+const RULE = '#98907E';       // heavy rule, bubble outlines
+const ACCENT = '#2A5FA8';     // blue, 22.2 deltaE from FBLA blue
+const RED = '#C23B34';        // kept for wrong answers and errors only
 const RED_DARK = '#9C2E28';
 const GREEN = '#2F6E4E';
 const GREEN_BG = '#E1EEE5';
-const GOLD = '#A9711F';
-const GOLD_BG = '#F1E4C6';
+const GOLD = '#C28620';       // gold, 21.8 deltaE from FBLA gold
+const GOLD_TEXT = '#8A5E12';  // darker gold, for small text on GOLD_BG
+const GOLD_BG = '#F6E8CA';
 
 const MONO = "ui-monospace, 'SF Mono', 'Menlo', 'Consolas', monospace";
 const SANS = "-apple-system, 'Segoe UI', Roboto, sans-serif";
 
 const styles = {
+  // Laid out like a printed objective test: paper stock, a heavy rule under
+  // the booklet header, square corners, no drop shadows, monospace for
+  // anything that would be pre-printed on a real answer sheet.
   page: { minHeight: '100vh', background: PAPER, display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: SANS, padding: '24px 16px' },
-  header: { width: '100%', maxWidth: '560px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' },
-  headerLogo: { fontFamily: MONO, fontSize: '13px', fontWeight: 700, color: INK, letterSpacing: '1px' },
+  header: { width: '100%', maxWidth: '560px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' },
+  headerLogo: { fontFamily: MONO, fontSize: '13px', fontWeight: 700, color: INK, letterSpacing: '1.5px' },
   headerTag: { fontFamily: MONO, fontSize: '11px', color: INK_SOFT, letterSpacing: '0.5px' },
-  card: { background: CARD, border: `1px solid ${LINE}`, borderRadius: '4px', padding: '32px', maxWidth: '560px', width: '100%', boxShadow: '0 1px 0 rgba(27,42,74,0.06), 0 8px 20px rgba(27,42,74,0.06)' },
-  eyebrow: { fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: RED, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '10px' },
+  signOut: { fontFamily: MONO, fontSize: '10px', fontWeight: 700, color: INK_SOFT, background: 'transparent', border: `1px solid ${RULE}`, borderRadius: 0, padding: '5px 9px', cursor: 'pointer', letterSpacing: '0.5px' },
+
+  // The sheet. Heavy navy bar across the top, like the header band printed
+  // on a test booklet.
+  card: { background: CARD, border: `1px solid ${RULE}`, borderTop: `5px solid ${INK}`, borderRadius: 0, padding: '28px 26px', maxWidth: '560px', width: '100%' },
+
+  eyebrow: { fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: INK_SOFT, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '10px' },
   title: { fontSize: '21px', fontWeight: 700, marginBottom: '6px', color: INK, lineHeight: 1.3 },
   subtitle: { fontSize: '14px', color: INK_SOFT, marginBottom: '22px', lineHeight: 1.5 },
-  input: { width: '100%', padding: '12px 14px', fontSize: '15px', border: `1px solid ${LINE}`, borderRadius: '3px', marginBottom: '14px', boxSizing: 'border-box', fontFamily: SANS, background: '#fff', color: INK },
-  select: { width: '100%', padding: '12px 14px', fontSize: '15px', border: `1px solid ${LINE}`, borderRadius: '3px', marginBottom: '14px', boxSizing: 'border-box', background: '#fff', color: INK, fontFamily: SANS },
-  button: { width: '100%', padding: '13px', fontSize: '14px', fontWeight: 700, color: '#fff', background: RED, border: 'none', borderRadius: '3px', cursor: 'pointer', marginBottom: '10px', fontFamily: MONO, letterSpacing: '0.5px', textTransform: 'uppercase' },
-  buttonSecondary: { width: '100%', padding: '13px', fontSize: '14px', fontWeight: 700, color: INK, background: 'transparent', border: `1px solid ${LINE}`, borderRadius: '3px', cursor: 'pointer', marginBottom: '10px', fontFamily: MONO, letterSpacing: '0.5px', textTransform: 'uppercase' },
-  buttonGreen: { width: '100%', padding: '13px', fontSize: '14px', fontWeight: 700, color: '#fff', background: GREEN, border: 'none', borderRadius: '3px', cursor: 'pointer', marginBottom: '10px', fontFamily: MONO, letterSpacing: '0.5px', textTransform: 'uppercase' },
-  buttonDisabled: { opacity: 0.5, cursor: 'not-allowed' },
-  menuTile: { width: '100%', textAlign: 'left', padding: '16px 18px', marginBottom: '10px', border: `1px solid ${LINE}`, borderRadius: '4px', background: '#fff', cursor: 'pointer' },
-  menuTag: { fontFamily: MONO, fontSize: '10px', fontWeight: 700, color: RED, letterSpacing: '1px', marginBottom: '4px' },
-  menuTitle: { fontSize: '16px', fontWeight: 700, color: INK, marginBottom: '2px' },
-  menuDesc: { fontSize: '13px', color: INK_SOFT },
-  progress: { fontFamily: MONO, fontSize: '12px', color: INK_SOFT, marginBottom: '18px', letterSpacing: '0.3px' },
-  qText: { fontSize: '18px', fontWeight: 600, color: INK, marginBottom: '22px', lineHeight: 1.4 },
-  bubbleRow: { display: 'flex', alignItems: 'center', gap: '14px', width: '100%', padding: '11px 14px', marginBottom: '10px', border: `1px solid ${LINE}`, borderRadius: '4px', background: '#fff', cursor: 'pointer', textAlign: 'left', fontFamily: SANS, fontSize: '15px', color: INK },
-  bubbleRowSelected: { borderColor: INK },
-  bubbleRowCorrect: { borderColor: GREEN, background: GREEN_BG },
-  bubbleRowWrong: { borderColor: RED, background: '#F7E7E5' },
-  bubble: { flexShrink: 0, width: '30px', height: '30px', borderRadius: '50%', border: `2px solid ${LINE}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontWeight: 700, fontSize: '13px', color: INK_SOFT, background: '#fff' },
+  input: { width: '100%', padding: '12px 14px', fontSize: '15px', border: `1px solid ${RULE}`, borderRadius: 0, marginBottom: '14px', boxSizing: 'border-box', fontFamily: SANS, background: '#fff', color: INK },
+  select: { width: '100%', padding: '12px 14px', fontSize: '15px', border: `1px solid ${RULE}`, borderRadius: 0, marginBottom: '14px', boxSizing: 'border-box', background: '#fff', color: INK, fontFamily: SANS },
+  button: { width: '100%', padding: '13px', fontSize: '13px', fontWeight: 700, color: '#fff', background: INK, border: `1px solid ${INK}`, borderRadius: 0, cursor: 'pointer', marginBottom: '10px', fontFamily: MONO, letterSpacing: '1.5px', textTransform: 'uppercase' },
+  buttonSecondary: { width: '100%', padding: '13px', fontSize: '13px', fontWeight: 700, color: INK, background: 'transparent', border: `1px solid ${RULE}`, borderRadius: 0, cursor: 'pointer', marginBottom: '10px', fontFamily: MONO, letterSpacing: '1.5px', textTransform: 'uppercase' },
+  buttonGreen: { width: '100%', padding: '13px', fontSize: '13px', fontWeight: 700, color: '#fff', background: GREEN, border: `1px solid ${GREEN}`, borderRadius: 0, cursor: 'pointer', marginBottom: '10px', fontFamily: MONO, letterSpacing: '1.5px', textTransform: 'uppercase' },
+  buttonDisabled: { opacity: 0.45, cursor: 'not-allowed' },
+
+  // Menu entries read as ruled rows on a form, not as floating cards.
+  menuTile: { width: '100%', textAlign: 'left', padding: '13px 0 13px 14px', marginBottom: 0, borderTop: `1px solid ${LINE}`, borderLeft: `3px solid transparent`, background: 'transparent', cursor: 'pointer' },
+  menuTag: { fontFamily: MONO, fontSize: '10px', fontWeight: 700, color: INK_SOFT, letterSpacing: '1px', marginBottom: '4px' },
+  menuSection: { marginBottom: '26px' },
+  sectionHeading: { fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: INK, letterSpacing: '2.5px', textTransform: 'uppercase', marginBottom: 0, paddingBottom: '6px', borderBottom: `2px solid ${INK}` },
+  menuTitle: { fontSize: '15px', fontWeight: 700, color: INK, marginBottom: '2px' },
+  menuDesc: { fontSize: '13px', color: INK_SOFT, lineHeight: 1.45 },
+
+  // Booklet strip above a question: number on the left, competency on the
+  // right, heavy rule underneath.
+  sheetHead: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: `2px solid ${INK}`, paddingBottom: '8px', marginBottom: '4px' },
+  qNum: { fontFamily: MONO, fontSize: '30px', fontWeight: 700, color: INK, letterSpacing: '1px', lineHeight: 1 },
+  qOf: { fontFamily: MONO, fontSize: '11px', color: INK_SOFT, letterSpacing: '1px' },
+  progress: { fontFamily: MONO, fontSize: '11px', color: INK_SOFT, marginBottom: '16px', letterSpacing: '1px', textTransform: 'uppercase' },
+
+  // Stem sits in a tall block and the answer rows are spaced out, so a
+  // question plus all four options always exceeds one screen height. No
+  // single screenshot can capture a whole question.
+  qText: { fontSize: '18px', fontWeight: 600, color: INK, marginBottom: '12vh', lineHeight: 1.45, minHeight: '48vh', display: 'flex', alignItems: 'center' },
+
+  // Answer rows are ruled lines with a real bubble, like a scantron.
+  bubbleRow: { display: 'flex', alignItems: 'center', gap: '16px', width: '100%', minHeight: '11vh', boxSizing: 'border-box', padding: '11px 12px', marginBottom: '14px', border: `1px solid ${LINE}`, borderLeft: `3px solid transparent`, borderRadius: 0, background: '#fff', cursor: 'pointer', textAlign: 'left', fontFamily: SANS, fontSize: '15px', color: INK },
+  bubbleRowSelected: { borderColor: INK, borderLeftColor: INK, background: '#fff' },
+  bubbleRowCorrect: { borderColor: GREEN, borderLeftColor: GREEN, background: GREEN_BG },
+  bubbleRowWrong: { borderColor: RED, borderLeftColor: RED, background: '#F7E7E5' },
+  bubble: { flexShrink: 0, width: '32px', height: '32px', borderRadius: '50%', border: `2px solid ${RULE}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontWeight: 700, fontSize: '13px', color: INK_SOFT, background: '#fff' },
   bubbleSelected: { borderColor: INK, background: INK, color: '#fff' },
   bubbleCorrect: { borderColor: GREEN, background: GREEN, color: '#fff' },
   bubbleWrong: { borderColor: RED, background: RED, color: '#fff' },
+
   scoreBox: { textAlign: 'center' },
-  scoreNum: { fontFamily: MONO, fontSize: '42px', fontWeight: 700, color: INK, margin: '10px 0' },
-  competencyTag: { display: 'inline-block', fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: INK_SOFT, border: `1px solid ${LINE}`, padding: '3px 9px', borderRadius: '999px', marginBottom: '14px', letterSpacing: '0.3px' },
-  error: { color: RED_DARK, fontSize: '14px', marginBottom: '14px', lineHeight: 1.4 },
-  flashcard: { minHeight: '210px', border: `1px solid ${LINE}`, borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '28px', cursor: 'pointer', fontSize: '17px', marginBottom: '16px', background: '#fff', color: INK },
-  flashcardBack: { background: GREEN_BG, borderColor: GREEN },
+  scoreNum: { fontFamily: MONO, fontSize: '46px', fontWeight: 700, color: INK, margin: '10px 0', letterSpacing: '1px' },
+  competencyTag: { display: 'inline-block', fontFamily: MONO, fontSize: '10px', fontWeight: 700, color: INK_SOFT, border: `1px solid ${RULE}`, padding: '3px 8px', borderRadius: 0, marginBottom: '14px', letterSpacing: '1px', textTransform: 'uppercase' },
+  error: { color: RED_DARK, fontSize: '14px', marginBottom: '14px', lineHeight: 1.4, borderLeft: `3px solid ${RED}`, paddingLeft: '10px' },
+  flashcard: { minHeight: '210px', border: `1px solid ${RULE}`, borderTop: `3px solid ${INK}`, borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '28px', cursor: 'pointer', fontSize: '17px', marginBottom: '16px', background: '#fff', color: INK },
+  flashcardBack: { background: GREEN_BG, borderColor: GREEN, borderTopColor: GREEN },
   flashcardTerm: { fontSize: '23px', fontWeight: 700, fontFamily: SANS },
-  missedItem: { padding: '14px', border: `1px solid ${LINE}`, borderRadius: '4px', marginBottom: '10px', textAlign: 'left', background: '#fff' },
+  missedItem: { padding: '13px 0 13px 12px', borderTop: `1px solid ${LINE}`, borderLeft: `3px solid ${RULE}`, borderRadius: 0, marginBottom: '10px', textAlign: 'left', background: 'transparent' },
   navRow: { display: 'flex', gap: '10px' },
-  levelTag: { display: 'inline-block', fontFamily: MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '3px 9px', borderRadius: '999px', marginBottom: '10px' },
+  levelTag: { display: 'inline-block', fontFamily: MONO, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', padding: '3px 8px', borderRadius: 0, marginBottom: '10px' },
   levelFoundational: { color: GREEN, background: GREEN_BG },
-  levelIntermediate: { color: GOLD, background: GOLD_BG },
+  levelIntermediate: { color: GOLD_TEXT, background: GOLD_BG },
   levelObscure: { color: RED_DARK, background: '#F7E7E5' },
-  summaryText: { fontSize: '15px', lineHeight: '1.65', color: INK, whiteSpace: 'pre-wrap', marginBottom: '22px' },
-  boxTag: { fontFamily: MONO, fontSize: '11px', color: INK_SOFT, marginBottom: '4px' },
+  summaryText: { fontSize: '15px', lineHeight: '1.7', color: INK, whiteSpace: 'pre-wrap', marginBottom: '22px' },
+  boxTag: { fontFamily: MONO, fontSize: '10px', color: INK_SOFT, marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' },
 };
+
 
 function rowToQuestion(row) {
   const letterToIndex = { a: 0, b: 1, c: 2, d: 3 };
@@ -81,6 +115,24 @@ function rowToQuestion(row) {
 // Picks the hardest available questions first, so AI generation is always
 // calibrated against real SLC-level material when it exists, instead of
 // whatever happens to be first in Supabase's default row order.
+// Fisher-Yates. Without this a practice set came back in whatever order
+// Supabase happened to return, which meant the same questions in the same
+// sequence every session: a student ends up learning positions rather than
+// content, and never reaches the back of a large pool.
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// A practice set is capped so a big pool doesn't turn into an endless
+// session. Real objective tests run about 100 questions; this is practice,
+// so a shorter set that can be finished in one sitting is more useful.
+const SESSION_SIZE = 25;
+
 const DIFFICULTY_RANK = { hard: 0, medium: 1, easy: 2 };
 function pickHardestExamples(pool, count) {
   return [...pool]
@@ -90,11 +142,33 @@ function pickHardestExamples(pool, count) {
 
 
 
-async function logResponse({ studentName, event, q, selectedIndex }) {
+// Every call to our own /api routes carries the signed-in student's token.
+// The server rejects anything without a valid one, so a stranger who finds
+// the API address cannot run up the Anthropic bill.
+async function authedFetch(url, body) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Your session expired. Sign in again.');
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (res.status === 401) throw new Error('Your session expired. Sign in again.');
+  if (res.status === 429) throw new Error('Too many requests in a row. Wait a minute and try again.');
+  return res;
+}
+
+async function logResponse({ studentName, studentEmail, event, q, selectedIndex }) {
   const letters = ['a', 'b', 'c', 'd'];
   try {
     await supabase.from('responses').insert({
       student_name: studentName,
+      student_email: studentEmail,
       event,
       question_text: q.q,
       competency: q.competency,
@@ -186,18 +260,44 @@ async function logMastery({ student, q, selectedIndex, correct }) {
 // later boxes stretch out to real day-scale spacing.
 const REVIEW_INTERVALS_MIN = { 1: 2, 2: 15, 3: 60, 4: 60 * 24, 5: 60 * 24 * 7 };
 
-const MENU_ITEMS = [
-  { key: 'progress', tag: 'TRACK', title: 'My Progress', desc: 'Your accuracy by competency, and where to practice next' },
-  { key: 'quiz-mixed', tag: 'QUIZ', title: 'Mixed Practice', desc: 'Questions from every competency, shuffled together' },
-  { key: 'quiz-competency', tag: 'QUIZ', title: 'Practice by Competency', desc: 'Focus on one competency area at a time' },
-  { key: 'review-mistakes', tag: 'REVIEW', title: 'Review Your Mistakes', desc: 'Questions you missed before, due for review now' },
-  { key: 'vocab', tag: 'CARDS', title: 'Vocabulary Flashcards', desc: 'Spaced repetition. Weak terms come back sooner.' },
-  { key: 'learn', tag: 'STUDY', title: 'Learn a Concept', desc: 'A written summary for one competency area' },
-  { key: 'ai-fresh', tag: 'QUIZ', title: 'Fresh AI Practice Set', desc: 'New questions, matched to the real ones in style' },
+// Grouped in the order a student actually moves through them: take the
+// material in, drill it, go back over what went wrong, then see where they
+// stand. The old per-tile tags (TRACK, QUIZ, CARDS...) were dropped; the
+// headings carry that job now and the titles already say the rest.
+const MENU_SECTIONS = [
+  {
+    heading: 'Study',
+    items: [
+      { key: 'learn', title: 'Learn a Concept', desc: 'Read through one competency area' },
+      { key: 'vocab', title: 'Vocabulary Flashcards', desc: 'Flashcards that bring back the terms you keep missing' },
+    ],
+  },
+  {
+    heading: 'Practice',
+    items: [
+      { key: 'quiz-mixed', title: 'Mixed Practice', desc: 'Random questions from across the whole event' },
+      { key: 'quiz-competency', title: 'Practice by Competency', desc: 'Drill a single competency area' },
+      { key: 'ai-fresh', title: 'Fresh AI Practice Set', desc: 'New questions written to match the real ones' },
+    ],
+  },
+  {
+    heading: 'Review',
+    items: [
+      { key: 'review-mistakes', title: 'Review Your Mistakes', desc: 'Go back over questions you got wrong' },
+    ],
+  },
+  {
+    heading: 'Progress',
+    items: [
+      { key: 'progress', title: 'My Progress', desc: 'Where you are strong, and what to work on' },
+    ],
+  },
 ];
 
 export default function App() {
   const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [checkingSession, setCheckingSession] = useState(true);
   const [student, setStudent] = useState(null);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
@@ -251,29 +351,89 @@ export default function App() {
   const [selectedCatalogEvent, setSelectedCatalogEvent] = useState(null);
   const [catalogDemoQuestions, setCatalogDemoQuestions] = useState([]);
 
-  const handleLogin = async () => {
-    if (emailInput.trim().length === 0) return;
-    setLoginLoading(true);
-    setLoginError('');
+  // Loads the student record belonging to the signed-in account.
+  // Row Level Security in the database guarantees this can only ever
+  // return that one student's own row.
+  const loadOwnStudentRow = async (email) => {
+    // Filtering by email explicitly, rather than relying on the database
+    // policies alone, means this works whether or not Row Level Security
+    // has been switched on yet. Without the filter this breaks while RLS
+    // is still off, because the query comes back with every student.
     const { data, error } = await supabase
       .from('students')
       .select('*')
-      .ilike('email', emailInput.trim())
+      .ilike('email', email)
       .maybeSingle();
 
     if (error) {
-      setLoginError('Something went wrong looking you up: ' + error.message);
-      setLoginLoading(false);
-      return;
+      return { error: 'Something went wrong loading your account: ' + error.message };
     }
     if (!data) {
-      setLoginError("We couldn't find that email. Check with your adviser to make sure you've been added.");
+      return { error: "Your sign-in worked, but you're not on the student list yet. Reach out to get added." };
+    }
+    return { student: data };
+  };
+
+  // If the student signed in earlier and hasn't signed out, pick that back up
+  // instead of making them type their password again.
+  useEffect(() => {
+    let cancelled = false;
+    async function restoreSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (cancelled) return;
+      if (session) {
+        const result = await loadOwnStudentRow(session.user.email);
+        if (cancelled) return;
+        if (result.student) setStudent(result.student);
+        else await supabase.auth.signOut();
+      }
+      setCheckingSession(false);
+    }
+    restoreSession();
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleLogin = async () => {
+    const email = emailInput.trim();
+    if (email.length === 0 || passwordInput.length === 0) {
+      setLoginError('Enter both your email and your password.');
+      return;
+    }
+    setLoginLoading(true);
+    setLoginError('');
+
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password: passwordInput,
+    });
+
+    if (authError) {
+      // Deliberately vague. Saying which half was wrong would let someone
+      // confirm whether a given classmate has an account.
+      setLoginError("That email and password don't match. Reach out if you need your password reset.");
       setLoginLoading(false);
       return;
-    
     }
-    setStudent(data);
+
+    const result = await loadOwnStudentRow(email);
+    if (result.error) {
+      await supabase.auth.signOut();
+      setLoginError(result.error);
+      setLoginLoading(false);
+      return;
+    }
+
+    setPasswordInput('');
+    setStudent(result.student);
     setLoginLoading(false);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setStudent(null);
+    setEmailInput('');
+    setPasswordInput('');
+    setScreen('menu');
   };
 
   useEffect(() => {
@@ -347,7 +507,7 @@ export default function App() {
 
 const handleMenuClick = (key) => {
     if (key === 'quiz-mixed') {
-      setQuestions(allQuestions);
+      setQuestions(shuffle(allQuestions).slice(0, SESSION_SIZE));
       resetSessionState();
       setScreen('quiz');
     } else if (key === 'quiz-competency') {
@@ -370,7 +530,7 @@ setScreen('learnPick');
     const filtered = competencyFilter === 'All'
       ? allQuestions
       : allQuestions.filter(q => q.competency === competencyFilter);
-    setQuestions(filtered);
+    setQuestions(shuffle(filtered).slice(0, SESSION_SIZE));
     resetSessionState();
     setScreen('quiz');
   };
@@ -382,7 +542,7 @@ setScreen('learnPick');
     const correct = i === q.answer;
     if (correct) setScore(s => s + 1);
     else setMissed(m => [...m, q]);
-    logResponse({ studentName: student.full_name, event: student.event, q, selectedIndex: i });
+    logResponse({ studentName: student.full_name, studentEmail: student.email, event: student.event, q, selectedIndex: i });
     logMastery({ student, q, selectedIndex: i, correct });
   };
 
@@ -406,11 +566,7 @@ setScreen('learnPick');
     setGenError('');
     resetSessionState();
     try {
-      const res = await fetch('/api/generate-questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ examples: pickHardestExamples(allQuestions, 8), count: 10, event: student.event }),
-      });
+      const res = await authedFetch('/api/generate-questions', { examples: pickHardestExamples(allQuestions, 8), count: 10, event: student.event });
       const data = await res.json();
       if (!Array.isArray(data) || data.length === 0) {
         throw new Error('AI did not return usable questions. Try again.');
@@ -432,11 +588,7 @@ setScreen('learnPick');
     setLearnSummary('');
     try {
       const examples = pickHardestExamples(allQuestions.filter(q => q.competency === learnCompetency), 6);
-      const res = await fetch('/api/explain-competency', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ competency: learnCompetency, examples, event: student.event }),
-      });
+      const res = await authedFetch('/api/explain-competency', { competency: learnCompetency, examples, event: student.event });
       const data = await res.json();
       if (!data.summary) throw new Error('Could not generate a summary. Try again.');
       setLearnSummary(data.summary);
@@ -465,11 +617,7 @@ setScreen('learnPick');
 
       if (!terms || terms.length === 0) {
         const examples = pickHardestExamples(allQuestions.filter(q => q.competency === vocabCompetency), 6);
-        const res = await fetch('/api/generate-vocab', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ competency: vocabCompetency, event: student.event, examples }),
-        });
+        const res = await authedFetch('/api/generate-vocab', { competency: vocabCompetency, event: student.event, examples });
         const generated = await res.json();
         if (!Array.isArray(generated) || generated.length === 0) {
           throw new Error('Could not generate vocabulary terms. Try again.');
@@ -706,16 +854,12 @@ setScreen('learnPick');
     }
     setReviewExplanationLoading(true);
     try {
-      const res = await fetch('/api/explain-missed-question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: q.q,
-          options: q.options,
-          correctAnswer: q.answer,
-          event: student.event,
-          competency: q.competency,
-        }),
+      const res = await authedFetch('/api/explain-missed-question', {
+        question: q.q,
+        options: q.options,
+        correctAnswer: q.answer,
+        event: student.event,
+        competency: q.competency,
       });
       const data = await res.json();
       const text = data.explanation || 'Could not generate an explanation right now.';
@@ -731,18 +875,40 @@ setScreen('learnPick');
   };
 
   // ---- Login ----
+  if (checkingSession) {
+    return (
+      <div style={styles.page}>
+        <div style={styles.card}>
+          <div style={styles.eyebrow}>MRHS FBLA PREP</div>
+          <div style={styles.title}>Loading</div>
+        </div>
+      </div>
+    );
+  }
+
   if (!student) {
     return (
       <div style={styles.page}>
         <div style={styles.card}>
           <div style={styles.eyebrow}>MRHS FBLA PREP</div>
           <div style={styles.title}>Sign in</div>
-          <div style={styles.subtitle}>Enter your email. Your assigned event loads automatically and cannot be changed here.</div>
+          <div style={styles.subtitle}>Sign in with the email and password set up for you. Your assigned event loads automatically and cannot be changed here.</div>
           <input
             style={styles.input}
+            type="email"
+            autoComplete="email"
             placeholder="you@example.com"
             value={emailInput}
             onChange={e => setEmailInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleLogin()}
+          />
+          <input
+            style={styles.input}
+            type="password"
+            autoComplete="current-password"
+            placeholder="Password"
+            value={passwordInput}
+            onChange={e => setPasswordInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleLogin()}
           />
           {loginError && <div style={styles.error}>{loginError}</div>}
@@ -761,7 +927,10 @@ setScreen('learnPick');
   const Header = () => (
     <div style={styles.header}>
       <div style={styles.headerLogo}>MRHS FBLA PREP</div>
-      <div style={styles.headerTag}>{student.full_name.toUpperCase()}</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={styles.headerTag}>{student.full_name.toUpperCase()}</div>
+        <button style={styles.signOut} onClick={handleLogout}>SIGN OUT</button>
+      </div>
     </div>
   );
 
@@ -780,11 +949,11 @@ setScreen('learnPick');
         const conf = conferenceDates.find(c => c.conference_type === type);
         const days = conf && conf.is_confirmed ? daysUntil(conf.start_date) : null;
         return (
-          <div key={type} style={{ flex: 1, background: CARD, border: `1px solid ${LINE}`, borderRadius: '4px', padding: '12px', textAlign: 'center' }}>
-            <div style={{ fontFamily: MONO, fontSize: '10px', fontWeight: 700, color: INK_SOFT, letterSpacing: '0.5px', marginBottom: '4px' }}>{type}</div>
+          <div key={type} style={{ flex: 1, background: CARD, border: `1px solid ${RULE}`, borderTop: `3px solid ${INK}`, borderRadius: 0, padding: '12px', textAlign: 'center' }}>
+            <div style={{ fontFamily: MONO, fontSize: '10px', fontWeight: 700, color: INK, letterSpacing: '1.5px', marginBottom: '4px' }}>{type}</div>
             {days !== null ? (
               <>
-                <div style={{ fontFamily: MONO, fontSize: '20px', fontWeight: 700, color: days < 0 ? INK_SOFT : RED }}>{days < 0 ? 'Past' : days}</div>
+                <div style={{ fontFamily: MONO, fontSize: '20px', fontWeight: 700, color: days < 0 ? INK_SOFT : ACCENT }}>{days < 0 ? 'Past' : days}</div>
                 <div style={{ fontSize: '10px', color: INK_SOFT }}>{days < 0 ? '' : 'days'}</div>
               </>
             ) : (
@@ -821,11 +990,15 @@ setScreen('learnPick');
           <div style={styles.eyebrow}>{student.event}</div>
           <div style={styles.title}>What do you want to study?</div>
           <div style={{ marginTop: '18px' }}>
-            {MENU_ITEMS.map(item => (
-              <div key={item.key} style={styles.menuTile} onClick={() => handleMenuClick(item.key)}>
-                <div style={styles.menuTag}>{item.tag}</div>
-                <div style={styles.menuTitle}>{item.title}</div>
-                <div style={styles.menuDesc}>{item.desc}</div>
+            {MENU_SECTIONS.map(section => (
+              <div key={section.heading} style={styles.menuSection}>
+                <div style={styles.sectionHeading}>{section.heading}</div>
+                {section.items.map(item => (
+                  <div key={item.key} style={styles.menuTile} onClick={() => handleMenuClick(item.key)}>
+                    <div style={styles.menuTitle}>{item.title}</div>
+                    <div style={styles.menuDesc}>{item.desc}</div>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
@@ -1019,7 +1192,7 @@ if (screen === 'progress') {
 
     const tierFor = (score) => {
       if (score >= 0.8) return { label: 'Strong', color: GREEN, bg: GREEN_BG };
-      if (score >= 0.5) return { label: 'Developing', color: GOLD, bg: GOLD_BG };
+      if (score >= 0.5) return { label: 'Developing', color: GOLD_TEXT, bg: GOLD_BG };
       return { label: 'Needs Work', color: RED_DARK, bg: '#F7E7E5' };
     };
 
@@ -1094,7 +1267,7 @@ if (screen === 'progress') {
               <div style={{ fontSize: '13px', color: INK_SOFT }}>
                 {!student.active
                   ? "You can still browse event information below."
-                  : "Once your adviser assigns your event, you'll get full practice access for it. In the meantime, explore what FBLA has to offer below."}
+                  : "Once your event is assigned, you'll get full practice access for it. In the meantime, explore what FBLA has to offer below."}
               </div>
             </div>
           )}
@@ -1220,7 +1393,7 @@ if (screen === 'progress') {
           </div>
           {reviewSelected !== null && (
             <div style={{ marginTop: '14px', marginBottom: '14px', padding: '16px', border: `1px solid ${LINE}`, borderRadius: '4px', background: GOLD_BG }}>
-              <div style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: GOLD, marginBottom: '8px', letterSpacing: '0.5px' }}>WHY</div>
+              <div style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: GOLD_TEXT, marginBottom: '8px', letterSpacing: '0.5px' }}>WHY</div>
               {reviewExplanationLoading ? (
                 <div style={{ fontSize: '14px', color: INK_SOFT }}>Loading explanation...</div>
               ) : (
@@ -1296,9 +1469,17 @@ if (screen === 'progress') {
       <div style={styles.page}>
         <Header />
         <div style={styles.card}>
-          {isAiSet && <div style={styles.competencyTag}>AI-GENERATED SET</div>}
-          <div style={styles.competencyTag}>{q.competency}</div>
-          <div style={styles.progress}>QUESTION {current + 1} OF {questions.length}</div>
+          <div style={styles.sheetHead}>
+            <div>
+              <div style={styles.qOf}>QUESTION</div>
+              <div style={styles.qNum}>{String(current + 1).padStart(2, '0')}</div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={styles.qOf}>OF {String(questions.length).padStart(2, '0')}</div>
+              {isAiSet && <div style={{ ...styles.qOf, color: GOLD_TEXT }}>AI-GENERATED SET</div>}
+            </div>
+          </div>
+          <div style={{ ...styles.competencyTag, marginTop: '12px' }}>{q.competency}</div>
           <div style={styles.qText}>{q.q}</div>
           <div>
             {q.options.map((opt, i) => {
