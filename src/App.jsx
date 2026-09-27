@@ -433,7 +433,7 @@ export default function App() {
     setStudent(null);
     setEmailInput('');
     setPasswordInput('');
-    setScreen('menu');
+    setScreen('home');
   };
 
   useEffect(() => {
@@ -1510,5 +1510,16 @@ if (screen === 'progress') {
     );
   }
 
-  return null;
+  // Any screen value without a branch above lands here. Returning null
+  // renders a blank white page with no console error, which is
+  // indistinguishable from a crash. Send the student home instead.
+  return (
+    <div style={styles.page}>
+      <div style={styles.card}>
+        <div style={styles.title}>Something went off track</div>
+        <div style={styles.subtitle}>That screen could not be found. Back to the menu.</div>
+        <button style={styles.button} onClick={goHome}>Back to menu</button>
+      </div>
+    </div>
+  );
 }
