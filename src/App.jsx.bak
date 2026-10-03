@@ -444,8 +444,7 @@ export default function App() {
       const { data, error } = await supabase
         .from('questions')
         .select('*')
-        .eq('event', student.event)
-        .is('retired_at', null);
+        .eq('event', student.event);
 
       if (error) {
         setLoadError('Could not load questions from the database: ' + error.message);
