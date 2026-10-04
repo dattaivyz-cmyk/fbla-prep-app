@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { syncStudyReminder, cancelStudyReminder } from './reminders.js'
 import { apiUrl } from './apiBase.js'
 import { supabase } from './supabaseClient';
 
@@ -419,7 +418,6 @@ export default function App() {
 
     const result = await loadOwnStudentRow(email);
     if (result.error) {
-      await cancelStudyReminder();
       await supabase.auth.signOut();
       setLoginError(result.error);
       setLoginLoading(false);
@@ -449,8 +447,6 @@ export default function App() {
         .select('*')
         .eq('event', student.event)
         .is('retired_at', null);
-
-      syncStudyReminder(supabase, student);
 
       if (error) {
         setLoadError('Could not load questions from the database: ' + error.message);
