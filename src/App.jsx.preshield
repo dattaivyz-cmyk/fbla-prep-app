@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { syncStudyReminder, cancelStudyReminder } from './reminders.js'
 import { apiUrl } from './apiBase.js'
-import QuestionShield from './QuestionShield.jsx'
 import { supabase } from './supabaseClient';
 
 // ---- Design tokens ----
@@ -1378,28 +1377,26 @@ if (screen === 'progress') {
         <div style={styles.card}>
           <div style={styles.competencyTag}>{q.competency}</div>
           <div style={styles.progress}>REVIEW {reviewCurrent + 1} OF {reviewQueue.length}</div>
-          <QuestionShield student={student} question={q}>
-            <div style={styles.qText}>{q.q}</div>
-            <div>
-              {q.options.map((opt, i) => {
-                let rowStyle = { ...styles.bubbleRow };
-                let bubbleStyle = { ...styles.bubble };
-                if (reviewSelected !== null) {
-                  if (i === q.answer) { rowStyle = { ...rowStyle, ...styles.bubbleRowCorrect }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleCorrect }; }
-                  else if (i === reviewSelected) { rowStyle = { ...rowStyle, ...styles.bubbleRowWrong }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleWrong }; }
-                } else if (i === reviewSelected) {
-                  rowStyle = { ...rowStyle, ...styles.bubbleRowSelected };
-                  bubbleStyle = { ...bubbleStyle, ...styles.bubbleSelected };
-                }
-                return (
-                  <button key={i} style={rowStyle} onClick={() => handleReviewAnswer(i)}>
-                    <span style={bubbleStyle}>{letters[i]}</span>
-                    <span>{opt}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </QuestionShield>
+          <div style={styles.qText}>{q.q}</div>
+          <div>
+            {q.options.map((opt, i) => {
+              let rowStyle = { ...styles.bubbleRow };
+              let bubbleStyle = { ...styles.bubble };
+              if (reviewSelected !== null) {
+                if (i === q.answer) { rowStyle = { ...rowStyle, ...styles.bubbleRowCorrect }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleCorrect }; }
+                else if (i === reviewSelected) { rowStyle = { ...rowStyle, ...styles.bubbleRowWrong }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleWrong }; }
+              } else if (i === reviewSelected) {
+                rowStyle = { ...rowStyle, ...styles.bubbleRowSelected };
+                bubbleStyle = { ...bubbleStyle, ...styles.bubbleSelected };
+              }
+              return (
+                <button key={i} style={rowStyle} onClick={() => handleReviewAnswer(i)}>
+                  <span style={bubbleStyle}>{letters[i]}</span>
+                  <span>{opt}</span>
+                </button>
+              );
+            })}
+          </div>
           {reviewSelected !== null && (
             <div style={{ marginTop: '14px', marginBottom: '14px', padding: '16px', border: `1px solid ${LINE}`, borderRadius: '4px', background: GOLD_BG }}>
               <div style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: GOLD_TEXT, marginBottom: '8px', letterSpacing: '0.5px' }}>WHY</div>
@@ -1489,28 +1486,26 @@ if (screen === 'progress') {
             </div>
           </div>
           <div style={{ ...styles.competencyTag, marginTop: '12px' }}>{q.competency}</div>
-          <QuestionShield student={student} question={q}>
-            <div style={styles.qText}>{q.q}</div>
-            <div>
-              {q.options.map((opt, i) => {
-                let rowStyle = { ...styles.bubbleRow };
-                let bubbleStyle = { ...styles.bubble };
-                if (selected !== null) {
-                  if (i === q.answer) { rowStyle = { ...rowStyle, ...styles.bubbleRowCorrect }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleCorrect }; }
-                  else if (i === selected) { rowStyle = { ...rowStyle, ...styles.bubbleRowWrong }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleWrong }; }
-                } else if (i === selected) {
-                  rowStyle = { ...rowStyle, ...styles.bubbleRowSelected };
-                  bubbleStyle = { ...bubbleStyle, ...styles.bubbleSelected };
-                }
-                return (
-                  <button key={i} style={rowStyle} onClick={() => handleAnswer(i)}>
-                    <span style={bubbleStyle}>{letters[i]}</span>
-                    <span>{opt}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </QuestionShield>
+          <div style={styles.qText}>{q.q}</div>
+          <div>
+            {q.options.map((opt, i) => {
+              let rowStyle = { ...styles.bubbleRow };
+              let bubbleStyle = { ...styles.bubble };
+              if (selected !== null) {
+                if (i === q.answer) { rowStyle = { ...rowStyle, ...styles.bubbleRowCorrect }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleCorrect }; }
+                else if (i === selected) { rowStyle = { ...rowStyle, ...styles.bubbleRowWrong }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleWrong }; }
+              } else if (i === selected) {
+                rowStyle = { ...rowStyle, ...styles.bubbleRowSelected };
+                bubbleStyle = { ...bubbleStyle, ...styles.bubbleSelected };
+              }
+              return (
+                <button key={i} style={rowStyle} onClick={() => handleAnswer(i)}>
+                  <span style={bubbleStyle}>{letters[i]}</span>
+                  <span>{opt}</span>
+                </button>
+              );
+            })}
+          </div>
           {selected !== null && (
             <button style={{ ...styles.button, marginTop: '10px' }} onClick={handleNext}>
               {current + 1 < questions.length ? 'Next question' : 'See score'}

@@ -7,6 +7,19 @@ import { requireStudent } from './_auth.js';
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || process.env.VITE_ANTHROPIC_API_KEY;
 
 export default async function handler(req, res) {
+  // The native app runs from capacitor://localhost, so every /api/ call is
+  // cross-origin and the browser sends an OPTIONS preflight first. Answer it
+  // before the method check, or the real request is never sent. The website
+  // is same-origin and never reaches this.
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'authorization, content-type');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+
   const user = await requireStudent(req, res);
   if (!user) return;
 

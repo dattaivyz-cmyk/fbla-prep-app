@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { syncStudyReminder, cancelStudyReminder } from './reminders.js'
 import { apiUrl } from './apiBase.js'
-import QuestionShield from './QuestionShield.jsx'
 import { supabase } from './supabaseClient';
 
 // ---- Design tokens ----
@@ -72,14 +71,14 @@ const styles = {
   // Stem sits in a tall block and the answer rows are spaced out, so a
   // question plus all four options always exceeds one screen height. No
   // single screenshot can capture a whole question.
-  qText: { fontSize: '18px', fontWeight: 600, color: INK, marginBottom: '3vh', lineHeight: 1.45, minHeight: '14vh', display: 'flex', alignItems: 'center' },
+  qText: { fontSize: '18px', fontWeight: 600, color: INK, marginBottom: '6vh', lineHeight: 1.45, minHeight: '30vh', display: 'flex', alignItems: 'center' },
 
   // Answer rows are ruled lines with a real bubble, like a scantron.
-  bubbleRow: { display: 'flex', alignItems: 'center', gap: '16px', width: '100%', minHeight: '9vh', boxSizing: 'border-box', padding: '11px 12px', marginBottom: '14px', borderWidth: '1px', borderStyle: 'solid', borderColor: LINE, borderLeftWidth: '3px', borderLeftStyle: 'solid', borderLeftColor: 'transparent', outline: 'none', WebkitTapHighlightColor: 'transparent', borderRadius: 0, background: '#fff', cursor: 'pointer', textAlign: 'left', fontFamily: SANS, fontSize: '16px', color: INK },
+  bubbleRow: { display: 'flex', alignItems: 'center', gap: '16px', width: '100%', minHeight: '19vh', boxSizing: 'border-box', padding: '11px 12px', marginBottom: '14px', borderWidth: '1px', borderStyle: 'solid', borderColor: LINE, borderLeftWidth: '3px', borderLeftStyle: 'solid', borderLeftColor: 'transparent', outline: 'none', WebkitTapHighlightColor: 'transparent', borderRadius: 0, background: '#fff', cursor: 'pointer', textAlign: 'left', fontFamily: SANS, fontSize: '17px', color: INK },
   bubbleRowSelected: { borderColor: INK, borderLeftColor: INK, background: '#fff' },
   bubbleRowCorrect: { borderColor: GREEN, borderLeftColor: GREEN, background: GREEN_BG },
   bubbleRowWrong: { borderColor: RED, borderLeftColor: RED, background: '#F7E7E5' },
-  bubble: { flexShrink: 0, width: '34px', height: '34px', borderRadius: '50%', border: `2px solid ${RULE}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontWeight: 700, fontSize: '13px', color: INK_SOFT, background: '#fff' },
+  bubble: { flexShrink: 0, width: '38px', height: '38px', borderRadius: '50%', border: `2px solid ${RULE}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontWeight: 700, fontSize: '13px', color: INK_SOFT, background: '#fff' },
   bubbleSelected: { borderColor: INK, background: INK, color: '#fff' },
   bubbleCorrect: { borderColor: GREEN, background: GREEN, color: '#fff' },
   bubbleWrong: { borderColor: RED, background: RED, color: '#fff' },
@@ -1378,28 +1377,26 @@ if (screen === 'progress') {
         <div style={styles.card}>
           <div style={styles.competencyTag}>{q.competency}</div>
           <div style={styles.progress}>REVIEW {reviewCurrent + 1} OF {reviewQueue.length}</div>
-          <QuestionShield student={student} question={q}>
-            <div style={styles.qText}>{q.q}</div>
-            <div>
-              {q.options.map((opt, i) => {
-                let rowStyle = { ...styles.bubbleRow };
-                let bubbleStyle = { ...styles.bubble };
-                if (reviewSelected !== null) {
-                  if (i === q.answer) { rowStyle = { ...rowStyle, ...styles.bubbleRowCorrect }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleCorrect }; }
-                  else if (i === reviewSelected) { rowStyle = { ...rowStyle, ...styles.bubbleRowWrong }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleWrong }; }
-                } else if (i === reviewSelected) {
-                  rowStyle = { ...rowStyle, ...styles.bubbleRowSelected };
-                  bubbleStyle = { ...bubbleStyle, ...styles.bubbleSelected };
-                }
-                return (
-                  <button key={i} style={rowStyle} onClick={() => handleReviewAnswer(i)}>
-                    <span style={bubbleStyle}>{letters[i]}</span>
-                    <span>{opt}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </QuestionShield>
+          <div style={styles.qText}>{q.q}</div>
+          <div>
+            {q.options.map((opt, i) => {
+              let rowStyle = { ...styles.bubbleRow };
+              let bubbleStyle = { ...styles.bubble };
+              if (reviewSelected !== null) {
+                if (i === q.answer) { rowStyle = { ...rowStyle, ...styles.bubbleRowCorrect }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleCorrect }; }
+                else if (i === reviewSelected) { rowStyle = { ...rowStyle, ...styles.bubbleRowWrong }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleWrong }; }
+              } else if (i === reviewSelected) {
+                rowStyle = { ...rowStyle, ...styles.bubbleRowSelected };
+                bubbleStyle = { ...bubbleStyle, ...styles.bubbleSelected };
+              }
+              return (
+                <button key={i} style={rowStyle} onClick={() => handleReviewAnswer(i)}>
+                  <span style={bubbleStyle}>{letters[i]}</span>
+                  <span>{opt}</span>
+                </button>
+              );
+            })}
+          </div>
           {reviewSelected !== null && (
             <div style={{ marginTop: '14px', marginBottom: '14px', padding: '16px', border: `1px solid ${LINE}`, borderRadius: '4px', background: GOLD_BG }}>
               <div style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: GOLD_TEXT, marginBottom: '8px', letterSpacing: '0.5px' }}>WHY</div>
@@ -1489,28 +1486,26 @@ if (screen === 'progress') {
             </div>
           </div>
           <div style={{ ...styles.competencyTag, marginTop: '12px' }}>{q.competency}</div>
-          <QuestionShield student={student} question={q}>
-            <div style={styles.qText}>{q.q}</div>
-            <div>
-              {q.options.map((opt, i) => {
-                let rowStyle = { ...styles.bubbleRow };
-                let bubbleStyle = { ...styles.bubble };
-                if (selected !== null) {
-                  if (i === q.answer) { rowStyle = { ...rowStyle, ...styles.bubbleRowCorrect }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleCorrect }; }
-                  else if (i === selected) { rowStyle = { ...rowStyle, ...styles.bubbleRowWrong }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleWrong }; }
-                } else if (i === selected) {
-                  rowStyle = { ...rowStyle, ...styles.bubbleRowSelected };
-                  bubbleStyle = { ...bubbleStyle, ...styles.bubbleSelected };
-                }
-                return (
-                  <button key={i} style={rowStyle} onClick={() => handleAnswer(i)}>
-                    <span style={bubbleStyle}>{letters[i]}</span>
-                    <span>{opt}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </QuestionShield>
+          <div style={styles.qText}>{q.q}</div>
+          <div>
+            {q.options.map((opt, i) => {
+              let rowStyle = { ...styles.bubbleRow };
+              let bubbleStyle = { ...styles.bubble };
+              if (selected !== null) {
+                if (i === q.answer) { rowStyle = { ...rowStyle, ...styles.bubbleRowCorrect }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleCorrect }; }
+                else if (i === selected) { rowStyle = { ...rowStyle, ...styles.bubbleRowWrong }; bubbleStyle = { ...bubbleStyle, ...styles.bubbleWrong }; }
+              } else if (i === selected) {
+                rowStyle = { ...rowStyle, ...styles.bubbleRowSelected };
+                bubbleStyle = { ...bubbleStyle, ...styles.bubbleSelected };
+              }
+              return (
+                <button key={i} style={rowStyle} onClick={() => handleAnswer(i)}>
+                  <span style={bubbleStyle}>{letters[i]}</span>
+                  <span>{opt}</span>
+                </button>
+              );
+            })}
+          </div>
           {selected !== null && (
             <button style={{ ...styles.button, marginTop: '10px' }} onClick={handleNext}>
               {current + 1 < questions.length ? 'Next question' : 'See score'}
