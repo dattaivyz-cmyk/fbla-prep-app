@@ -30,3 +30,6 @@ dist
 .vercel*.bak
 
 *.bak
+
+*.prerevert
+*.preshield
